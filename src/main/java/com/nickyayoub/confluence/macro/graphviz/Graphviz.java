@@ -11,6 +11,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Graphviz {
     private static String TEMP_DIR = "/var/tmp";
@@ -19,13 +21,13 @@ public class Graphviz {
 
     public static byte[] getGraph(String dot_source) {
         File dot;
-        byte[] img_stream = null;
+        byte[] img_stream;
 
         try {
             dot = writeDotSourceToFile(dot_source);
             if (dot != null) {
                 img_stream = get_img_stream(dot);
-                if (dot.delete() == false)
+                if (!dot.delete())
                     System.err.println("Warning: " + dot.getAbsolutePath() + " could not be deleted!");
                 return img_stream;
             }
@@ -60,13 +62,17 @@ public class Graphviz {
 
         try {
             img = File.createTempFile("graph_", "." + TYPE, new File(Graphviz.TEMP_DIR));
-            Runtime rt = Runtime.getRuntime();
 
+             List<String> commands = new ArrayList<String>();
+                commands.add(DOT);
+                commands.add("-T" + TYPE);
+                commands.add(dot.getAbsolutePath());
+                commands.add("-o");
+                commands.add(img.getAbsolutePath());
+             ProcessBuilder pb = new ProcessBuilder(commands);
+            Process process = pb.start();
 
-            String[] args = {DOT, "-T" + TYPE, dot.getAbsolutePath(), "-o", img.getAbsolutePath()};
-            Process p = rt.exec(args);
-
-            p.waitFor();
+            process.waitFor();
 
             FileInputStream in = new FileInputStream(img.getAbsolutePath());
             img_stream = new byte[in.available()];
@@ -74,7 +80,7 @@ public class Graphviz {
             // Close it if we need to
             if (in != null) in.close();
 
-            if (img.delete() == false)
+            if (!img.delete())
                 System.err.println("Warning: " + img.getAbsolutePath() + " could not be deleted!");
         } catch (IOException ioe) {
             System.err.println("Error:    in I/O processing of tempfile in dir " + Graphviz.TEMP_DIR + "\n");
