@@ -37,13 +37,10 @@ public class GeevizMacro implements Macro {
         parameters = toLowerCase(parameters);
 
         StringBuilder builder = new StringBuilder();
-        log.error(bodyContent);
 
         String gv = "graph graphname { \n" +
                 "	node [label=\"NO GRAPH SPECIFIED\",  color=Blue, fontcolor=Red, fontsize=24, shape=box]; M\n" +
                 "}\n";
-
-        String s2 = Graphviz.encodeGraph(gv);
 
         if (!bodyContent.isEmpty()) {
             gv = bodyContent;
