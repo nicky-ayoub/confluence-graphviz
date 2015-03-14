@@ -21,8 +21,9 @@
         <context>nickyayoub-confluence-macro-graphviz</context>
     </web-resource>
 
-    <xhtml-macro name="nickyayoub-confluence-macro-graphviz" class="com.nickyayoub.confluence.macro.graphviz.GeevizMacro"
+    <xhtml-macro name="geeviz" class="com.nickyayoub.confluence.macro.graphviz.GeevizMacro"
                  icon="/download/resources/${project.groupId}.${project.artifactId}/images/iconTut.jpg" key="my-macro">
+        <category name="visuals"/>
         <parameters>
             <parameter name="showsource" type="boolean" default="false"/>
         </parameters>
