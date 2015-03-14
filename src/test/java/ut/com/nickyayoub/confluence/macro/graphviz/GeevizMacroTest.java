@@ -24,4 +24,44 @@ public class GeevizMacroTest extends TestCase {
            assertTrue("oK", true);
      }
 
+    @Test
+    public void testStringTrim() throws Exception {
+        String s = "       A    ";
+        s = s.trim();
+        assertTrue("Trimmed", s.equals("A"));
+    }
+        @Test
+    public void testStringFront() throws Exception {
+        String s = "          ";
+        s = s.replaceFirst("^\\s*", "");
+        assertTrue("compress empty", s.isEmpty());
+    }
+        @Test
+    public void testStringBack() throws Exception {
+        String s = "          ";
+        s = s.replaceFirst("\\s*$", "");
+        assertTrue("compress empty", s.isEmpty());
+    }
+            @Test
+    public void testSpaceFront() throws Exception {
+        String s = " ";
+        s = s.replaceFirst("^\\s*", "");
+        assertTrue("compress space front", s.isEmpty());
+    }
+        @Test
+    public void testSpaceBack() throws Exception {
+        String s = " ";
+        s = s.replaceFirst("\\s*$", "");
+        assertTrue("compress space back", s.isEmpty());
+    }
+    public void testUnicodeBack() throws Exception {
+        String s = "\uC2A0";
+        s = s.replaceFirst("[\\p{Zs}\\s]*$", "");
+        assertTrue("compress U space back", s.isEmpty());
+    }
+    public void testUnicodeFront() throws Exception {
+        String s = "\uC2A0";
+        s = s.replaceFirst("^[\\p{Zs}\\s]*", "");
+        assertTrue("compress sI pace back", s.isEmpty());
+    }
 }

@@ -24,7 +24,7 @@ public class GeevizMacro implements Macro {
     private static final int DEFAULT_WIDTH = 300;
     private static final int DEFAULT_HEIGHT = 300;
 
-    public GeevizMacro( WritableDownloadResourceManager downloadResourceManager) {
+    public GeevizMacro(WritableDownloadResourceManager downloadResourceManager) {
 
         this.downloadResourceManager = downloadResourceManager;
     }
@@ -37,52 +37,58 @@ public class GeevizMacro implements Macro {
         parameters = toLowerCase(parameters);
 
         StringBuilder builder = new StringBuilder();
+        bodyContent = bodyContent.replaceFirst("[\\p{Zs}\\s]*$", ""); // Unicode non-breaking space \p{Zs}
+        bodyContent = bodyContent.replaceFirst("^[\\p{Zs}\\s]*", "");
+//        byte[] buf = bodyContent.getBytes();
+//        log.error(String.format("body : %sEmpty",  bodyContent.isEmpty() ? "" : "Not " ));
+//        log.error(String.format("body : -->%s<--", bodyContent));
+//        log.error( Hex.encodeHexString(buf));
 
-        String gv = "graph graphname { \n" +
-                "	node [label=\"NO GRAPH SPECIFIED\",  color=Blue, fontcolor=Red, fontsize=24, shape=box]; M\n" +
-                "}\n";
+        if (bodyContent.isEmpty()) {  // Checking for empty was not good enough. The Unicode NBSP was never stripped.
 
-        if (!bodyContent.isEmpty()) {
-            gv = bodyContent;
-        }
-
-        DownloadResourceWriter downloadResourceWriter = downloadResourceManager.getResourceWriter(
-                StringUtils.defaultString(AuthenticatedUserThreadLocal.getUsername()),
-                "graph", String.format("%s%s", '.', "png")
-        );
-        OutputStream outputStream = null;
-        try
-        {
-            outputStream = downloadResourceWriter.getStreamForWriting();
-            byte[] image = Graphviz.getGraph(gv);
-            outputStream.write(image);
-
-            int width = 100; //getIntegerParameter(parameters, "width", DEFAULT_WIDTH, 0);
-            //if (width < 0)
-            //    width = DEFAULT_WIDTH;
-            int height =  100; //getIntegerParameter(parameters, "height", DEFAULT_HEIGHT, 0);
-
-            builder.append(
-                    String.format(
-                            //"\n<img src=\"%s\" width=\"%d\" height=\"%d\">\n",
-                            "\n<img src=\"%s\">\n",
-                            downloadResourceWriter.getResourcePath()
-                    )
-            );
-        } catch (IOException e) {
-           builder.append("<p>The GraphViz image generation failed...<br>");
             builder.append("<div class=\"confluence-information-macro confluence-information-macro-warning\">\n");
-              builder.append("<span class=\"aui-icon aui-icon-small aui-iconfont-error confluence-information-macro-icon\"></span>\n");
-              builder.append("<div class=\"confluence-information-macro-body\">");
-              builder.append(e.getMessage());
-              builder.append("</div>");
-           builder.append("</div>");
-           builder.append("</p>");
-        } finally
-        {
-            IOUtils.closeQuietly(outputStream);
-        }
+            builder.append("<span class=\"aui-icon aui-icon-small aui-iconfont-error confluence-information-macro-icon\"></span>\n");
+            builder.append("<div class=\"confluence-information-macro-body\">");
+            builder.append("The Macro Body is empty. There is no graph!");
+            builder.append("</div>");
+            builder.append("</div>");
+        } else {
+            String gv = bodyContent;
+            DownloadResourceWriter downloadResourceWriter = downloadResourceManager.getResourceWriter(
+                    StringUtils.defaultString(AuthenticatedUserThreadLocal.getUsername()),
+                    "graph", String.format("%s%s", '.', "png")
+            );
+            OutputStream outputStream = null;
+            try {
+                outputStream = downloadResourceWriter.getStreamForWriting();
+                byte[] image = Graphviz.getGraph(gv);
+                outputStream.write(image);
 
+                int width = 100; //getIntegerParameter(parameters, "width", DEFAULT_WIDTH, 0);
+                //if (width < 0)
+                //    width = DEFAULT_WIDTH;
+                int height = 100; //getIntegerParameter(parameters, "height", DEFAULT_HEIGHT, 0);
+
+                builder.append(
+                        String.format(
+                                //"\n<img src=\"%s\" width=\"%d\" height=\"%d\">\n",
+                                "\n<img src=\"%s\">\n",
+                                downloadResourceWriter.getResourcePath()
+                        )
+                );
+            } catch (IOException e) {
+                builder.append("<p>The GraphViz image generation failed...<br>");
+                builder.append("<div class=\"confluence-information-macro confluence-information-macro-warning\">\n");
+                builder.append("<span class=\"aui-icon aui-icon-small aui-iconfont-error confluence-information-macro-icon\"></span>\n");
+                builder.append("<div class=\"confluence-information-macro-body\">");
+                builder.append(e.getMessage());
+                builder.append("</div>");
+                builder.append("</div>");
+                builder.append("</p>");
+            } finally {
+                IOUtils.closeQuietly(outputStream);
+            }
+        }
         return builder.toString();
 
     }
@@ -115,8 +121,7 @@ public class GeevizMacro implements Macro {
         if (!StringUtils.isEmpty((String) parameters.get(param))) {
             try {
                 result = new Integer((String) parameters.get(param));
-            }
-            catch (NumberFormatException exception) {
+            } catch (NumberFormatException exception) {
                 throw new MacroExecutionException("Invalid " + param + " parameter.  It must be an integer.");
             }
         }
