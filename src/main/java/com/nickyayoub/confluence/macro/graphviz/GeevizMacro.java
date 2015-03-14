@@ -66,9 +66,7 @@ public class GeevizMacro implements Macro {
                     String.format(
                             //"\n<img src=\"%s\" width=\"%d\" height=\"%d\">\n",
                             "\n<img src=\"%s\">\n",
-                            downloadResourceWriter.getResourcePath(),
-                            width,
-                            height
+                            downloadResourceWriter.getResourcePath()
                     )
             );
         } catch (IOException e) {

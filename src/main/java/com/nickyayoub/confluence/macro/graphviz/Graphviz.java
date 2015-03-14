@@ -58,7 +58,7 @@ public class Graphviz {
 
     private static byte[] get_img_stream(File dot) throws IOException {
         File img;
-        byte[] img_stream = null;
+        byte[] img_stream;
 
         try {
             img = File.createTempFile("graph_", "." + TYPE, new File(Graphviz.TEMP_DIR));
@@ -78,7 +78,7 @@ public class Graphviz {
             img_stream = new byte[in.available()];
             in.read(img_stream);
             // Close it if we need to
-            if (in != null) in.close();
+            in.close();
 
             if (!img.delete())
                 System.err.println("Warning: " + img.getAbsolutePath() + " could not be deleted!");
