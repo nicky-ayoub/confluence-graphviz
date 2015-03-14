@@ -36,6 +36,7 @@ public class GeevizMacro implements Macro {
 
         parameters = toLowerCase(parameters);
 
+        boolean showSource = new Boolean((String) parameters.get("showsource"));
         StringBuilder builder = new StringBuilder();
         bodyContent = bodyContent.replaceFirst("[\\p{Zs}\\s]*$", ""); // Unicode non-breaking space \p{Zs}
         bodyContent = bodyContent.replaceFirst("^[\\p{Zs}\\s]*", "");
@@ -76,6 +77,9 @@ public class GeevizMacro implements Macro {
                                 downloadResourceWriter.getResourcePath()
                         )
                 );
+                if(showSource) {
+                    builder.append(String.format("\n<pre>\n%s\n</pre>\n", gv));
+                }
             } catch (IOException e) {
                 builder.append("<p>The GraphViz image generation failed...<br>");
                 builder.append("<div class=\"confluence-information-macro confluence-information-macro-warning\">\n");
