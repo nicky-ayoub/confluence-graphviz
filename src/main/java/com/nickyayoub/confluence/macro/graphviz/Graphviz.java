@@ -19,7 +19,7 @@ public class Graphviz {
     private static String DOT = "/usr/bin/dot";
     private static String TYPE = "png";
 
-    public static byte[] getGraph(String dot_source) {
+    public static byte[] getGraph(String dot_source) throws IOException {
         File dot;
         byte[] img_stream;
 
@@ -33,10 +33,10 @@ public class Graphviz {
             }
             return null;
         } catch (IOException ioe) {
-            return null;
+            throw new IOException(ioe);
         }
     }
-    public static String encodeGraph(String dot_source) {
+    public static String encodeGraph(String dot_source) throws IOException {
         return Base64.encodeBase64String(getGraph(dot_source));
     }
 
@@ -56,7 +56,7 @@ public class Graphviz {
         return 1;
     }
 
-    private static byte[] get_img_stream(File dot) {
+    private static byte[] get_img_stream(File dot) throws IOException {
         File img;
         byte[] img_stream = null;
 
@@ -83,12 +83,15 @@ public class Graphviz {
             if (!img.delete())
                 System.err.println("Warning: " + img.getAbsolutePath() + " could not be deleted!");
         } catch (IOException ioe) {
-            System.err.println("Error:    in I/O processing of tempfile in dir " + Graphviz.TEMP_DIR + "\n");
+            System.err.println("Error:    in I/O processing of tempfile in dir " + Graphviz.TEMP_DIR );
             System.err.println("       or in calling external command");
-            ioe.printStackTrace();
+          //  ioe.printStackTrace();
+            throw new IOException(ioe);
+
         } catch (InterruptedException ie) {
             System.err.println("Error: the execution of the external program was interrupted");
-            ie.printStackTrace();
+            //ie.printStackTrace();
+             throw new Error(ie);
         }
 
         return img_stream;
