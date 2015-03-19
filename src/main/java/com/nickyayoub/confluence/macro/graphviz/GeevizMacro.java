@@ -81,14 +81,12 @@ public class GeevizMacro implements Macro {
                     builder.append(String.format("\n<pre>\n%s\n</pre>\n", gv));
                 }
             } catch (IOException e) {
-                builder.append("<p>The GraphViz image generation failed...<br>");
-                builder.append("<div class=\"confluence-information-macro confluence-information-macro-warning\">\n");
-                builder.append("<span class=\"aui-icon aui-icon-small aui-iconfont-error confluence-information-macro-icon\"></span>\n");
-                builder.append("<div class=\"confluence-information-macro-body\">");
+                builder.append("<div class=\"aui-message aui-message-error\">\n");
+                builder.append("<p class=\"title\"><strong>The GraphViz image generation failed...</strong></p>\n");
+                builder.append("<p>");
                 builder.append(e.getMessage());
-                builder.append("</div>");
-                builder.append("</div>");
-                builder.append("</p>");
+                builder.append("</p>\n");
+                builder.append("</div><!-- .aui-message -->\n");
             } finally {
                 IOUtils.closeQuietly(outputStream);
             }

@@ -16,7 +16,7 @@ import java.util.List;
 
 public class Graphviz {
     private static String TEMP_DIR = "/var/tmp";
-    private static String DOT = "/usr/bin/dot";
+    private static String DOT = "/usr/bin/dotxxx";
     private static String TYPE = "png";
 
     public static byte[] getGraph(String dot_source) throws IOException {
