@@ -16,7 +16,7 @@ import java.util.List;
 
 public class Graphviz {
     private static String TEMP_DIR = "/var/tmp";
-    private static String DOT = "/usr/bin/dotxxx";
+    private static String DOT = "/usr/bin/dot";
     private static String TYPE = "png";
 
     public static byte[] getGraph(String dot_source) throws IOException {
@@ -79,7 +79,9 @@ public class Graphviz {
             in.read(img_stream);
             // Close it if we need to
             in.close();
-
+            if( process.exitValue() != 0) {
+                throw new IOException("Dot failed to execute. Exit value is not 0.");
+            }
             if (!img.delete())
                 System.err.println("Warning: " + img.getAbsolutePath() + " could not be deleted!");
         } catch (IOException ioe) {

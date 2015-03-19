@@ -46,13 +46,7 @@ public class GeevizMacro implements Macro {
 //        log.error( Hex.encodeHexString(buf));
 
         if (bodyContent.isEmpty()) {  // Checking for empty was not good enough. The Unicode NBSP was never stripped.
-
-            builder.append("<div class=\"confluence-information-macro confluence-information-macro-warning\">\n");
-            builder.append("<span class=\"aui-icon aui-icon-small aui-iconfont-error confluence-information-macro-icon\"></span>\n");
-            builder.append("<div class=\"confluence-information-macro-body\">");
             builder.append("The Macro Body is empty. There is no graph!");
-            builder.append("</div>");
-            builder.append("</div>");
         } else {
             String gv = bodyContent;
             DownloadResourceWriter downloadResourceWriter = downloadResourceManager.getResourceWriter(
@@ -77,16 +71,12 @@ public class GeevizMacro implements Macro {
                                 downloadResourceWriter.getResourcePath()
                         )
                 );
-                if(showSource) {
+                if (showSource) {
                     builder.append(String.format("\n<pre>\n%s\n</pre>\n", gv));
                 }
             } catch (IOException e) {
-                builder.append("<div class=\"aui-message aui-message-error\">\n");
-                builder.append("<p class=\"title\"><strong>The GraphViz image generation failed...</strong></p>\n");
-                builder.append("<p>");
-                builder.append(e.getMessage());
-                builder.append("</p>\n");
-                builder.append("</div><!-- .aui-message -->\n");
+                builder.append(errorMessage(e.getMessage()));
+
             } finally {
                 IOUtils.closeQuietly(outputStream);
             }
@@ -103,6 +93,17 @@ public class GeevizMacro implements Macro {
     @Override
     public OutputType getOutputType() {
         return OutputType.BLOCK;
+    }
+
+    String errorMessage(String msg) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("<div class=\"aui-message aui-message-error\">\n");
+        builder.append("<p class=\"title\"><strong>The GraphViz image generation failed...</strong></p>\n");
+        builder.append("<p>");
+        builder.append(msg);
+        builder.append("</p>\n");
+        builder.append("</div><!-- .aui-message -->\n");
+        return builder.toString();
     }
 
     // force integer parameter to default if less than lower bound
